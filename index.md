@@ -50,7 +50,7 @@ X-Scheme: http
 ```
 
 >Things start to break here with osm mesh enabled:
-
+### add osm namespace to service mesh
 - Add the osm namespace to the mesh and verify if envoy side-car is injected
 `osm namespace add osm`
 - If you curl the same IP again you will find the whoami is no longer accessible, because any service within OSM must use an ingress gateway/controller to be exposed outside the cluster. and you could use:
