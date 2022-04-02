@@ -106,9 +106,13 @@ spec:
 ```
 At this stage, if you`curl Ingress_Controller_Service_IP/whoami`, you will get **502 Bad Gateway**, because whoami service disallows reqeust from our ingress controller.
 I love ingress nginx logs because is it always helps to understand what's going on:
+
 ```
-[error] 102#102: *179260 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 10.240.0.36, server: _, request: "GET /whoami HTTP/1.1", upstream: "http://10.240.0.57:80/", host: "20.200.91.235"
-10.240.0.36 - - [02/Apr/2022:10:40:03 +0000] "GET /whoami HTTP/1.1" 502 150 "-" "curl/7.58.0" 83 0.001 [osm-whoami-80] [] 10.240.0.57:80, 10.240.0.57:80, 10.240.0.57:80 0, 0, 0 0.000, 0.000, 0.000 502, 502, 502 4c2590c86069efbe0584960568480bfc
+[error] 102#102: *179260 recv() failed (104: Connection reset by peer) while reading response header from upstream, 
+client: 10.240.0.36, server: _, request: "GET /whoami HTTP/1.1", upstream: "http://10.240.0.57:80/", host: "20.200.91.235"
+10.240.0.36 - - [02/Apr/2022:10:40:03 +0000] "GET /whoami HTTP/1.1" 502 150 "-" 
+"curl/7.58.0" 83 0.001 [osm-whoami-80] [] 
+10.240.0.57:80, 10.240.0.57:80, 10.240.0.57:80 0, 0, 0 0.000, 0.000, 0.000 502, 502, 502 4c2590c86069efbe0584960568480bfc
 ```
 It is saying my whoami pod 10.240.0.57 refused the traffic from ingress controller, we should be happy to see the log because this is what OSM is supposed to do right?
 
