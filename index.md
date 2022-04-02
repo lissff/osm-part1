@@ -10,7 +10,9 @@ That's why I'm going to document these steps I went through and I hope that will
 
 - AKS cluster with 
     [OSM add-on installed](https://docs.microsoft.com/en-us/azure/aks/open-service-mesh-deploy-addon-az-cli)
+    
     [Ingress Nginx installed](https://docs.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration)
+    
     If you want to explore AGIC+OSM then [AGIC add-on installed](https://docs.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-new)
 - OSM [CLI](https://release-v1-0.docs.openservicemesh.io/docs/guides/cli/)
 - A bit understanding of how ingress nginx works
