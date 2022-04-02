@@ -82,28 +82,29 @@ Suppose we have ingress-controller installed in **ingress-basic** namespece(or a
     
     `osm namespace add ingress-basic  --mesh-name osm --disable-sidecar-injection`
 3. Have Ingress rules defined for whoami:
-```
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: whoami
-  namespace: osm
-  annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true" # optional
-    nginx.ingress.kubernetes.io/rewrite-target: / # no need for whoami actually, it eats everything
-spec:
-  ingressClassName: nginx
-  rules:
-  - http:
-      paths:
-      - path: /whoami
-        pathType: Prefix
-        backend:
-          service:
-            name: whoami
-            port:
-              number: 80
-```
+
+    ```
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: whoami
+      namespace: osm
+      annotations:
+        nginx.ingress.kubernetes.io/use-regex: "true" # optional
+        nginx.ingress.kubernetes.io/rewrite-target: / # no need for whoami actually, it eats everything
+    spec:
+      ingressClassName: nginx
+      rules:
+      - http:
+          paths:
+          - path: /whoami
+            pathType: Prefix
+            backend:
+              service:
+                name: whoami
+                port:
+                  number: 80
+    ```
 At this stage, if you`curl Ingress_Controller_Service_IP/whoami`, you will get **502 Bad Gateway**, because whoami service disallows reqeust from our ingress controller.
 I love ingress nginx logs because is it always helps to understand what's going on:
 
