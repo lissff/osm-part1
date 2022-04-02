@@ -3,7 +3,7 @@
 {:toc}
 ## OSM with AKS
 [OSM](https://github.com/openservicemesh/osm) which claims to be lightweight and extensible, now can be one-click integrated into AKS as add-on.
-It sounds promising but I do spend quite some sometime running just a demo app maybe because it is a new product and documentation is not covering all scenarios. 
+It sounds promising but I do spend quite sometime running just a demo app maybe because it is a new product and documentation is not covering all scenarios. 
 That's why I'm going to document these steps I went through and I hope that will be helpful for anyone who has experienced the same issues.
 
 >Prerequisites
