@@ -139,9 +139,11 @@ spec:
 apply it then it's done,  `curl Ingress_Controller_Service_IP/whoami` you will see whoami responding again.
 
 ## Ingress with AGIC
-If you have your websites hosted in Azure and AKS then you probably know the charming part of AGIC. But the dark side is being a nginx server, we are not able to see the debug logs(because it is managed by Azure).
+If you have your websites hosted in Azure and AKS then you probably know the charming part of AGIC. But the dark side is being a nginx server, we are not able to see some of the debug logs(because it is managed by Azure).
+
 The ingress rule itself it easy, if you worked with AGIC before(just make sure we have `kubernetes.io/ingress.class: azure/application-gateway` so that AGIC would recgonize it.
-And another thing is translate your Ingress Nginx annotation into [AGIC annotaion](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/), e.g.
+
+Another tip is don't forget to translate your Ingress Nginx annotation into [AGIC annotaion](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/), e.g.
 using ` appgw.ingress.kubernetes.io/backend-path-prefix: /` instead of `nginx.ingress.kubernetes.io/rewrite-target: /`
 This is not necessary for whoami but always good to know.
 ```
