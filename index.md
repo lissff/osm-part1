@@ -144,7 +144,7 @@ If you have your websites hosted in Azure and AKS then you probably know the cha
 The ingress rule itself it easy, if you worked with AGIC before(just make sure we have `kubernetes.io/ingress.class: azure/application-gateway` so that AGIC would recgonize it.
 
 Another tip is don't forget to translate your Ingress Nginx annotation into [AGIC annotaion](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/), e.g.
-using ` appgw.ingress.kubernetes.io/backend-path-prefix: /` instead of `nginx.ingress.kubernetes.io/rewrite-target: /`
+using ` appgw.ingress.kubernetes.io/backend-path-prefix: / ` instead of `nginx.ingress.kubernetes.io/rewrite-target: / `
 This is not necessary for whoami but always good to know.
 ```
 apiVersion: networking.k8s.io/v1
