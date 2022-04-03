@@ -140,7 +140,32 @@ apply it then it's done,  `curl Ingress_Controller_Service_IP/whoami` you will s
 
 ## Ingress with AGIC
 If you have your websites hosted in Azure and AKS then you probably know the charming part of AGIC. But the dark side is being a nginx server, we are not able to see the debug logs(because it is managed by Azure).
-We barely knows why my Application_Gateway_IP returns 502 and why it is saying my backend is unhealthy.
+The ingress rule itself it easy, if you worked with AGIC before(just make sure we have `kubernetes.io/ingress.class: azure/application-gateway` so that AGIC would recgonize it.
+And another thing is translate your Ingress Nginx annotation into [AGIC annotaion](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/), e.g.
+using ` appgw.ingress.kubernetes.io/backend-path-prefix: /` instead of `nginx.ingress.kubernetes.io/rewrite-target: /`
+This is not necessary for whoami but always good to know.
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    appgw.ingress.kubernetes.io/backend-path-prefix: /
+    kubernetes.io/ingress.class: azure/application-gateway
+  name: agic
+  namespace: osm
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: whoami
+            port:
+              number: 80
+        path: /whoami
+        pathType: Prefix
+```
+Then what about IngressBackend? We barely knows why my Application_Gateway_IP returns 502 and why it is saying my backend is unhealthy.
 We know though from previous ingress controller experiment that if my AGIC traffic is not allowed by whoami, then it just rejects it. But how to allow my Application Gateway access? What should I put into this trusted sources block if I don't even have a service that stands for AGIC:
 ```
   sources:
