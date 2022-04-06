@@ -7,12 +7,11 @@ It sounds promising but I do spend quite sometime running just a demo app maybe 
 That's why I'm going to document these steps I went through and I hope that will be helpful for anyone who has experienced the same issues.
 
 >Prerequisites
-
 - AKS cluster with 
     [OSM add-on installed](https://docs.microsoft.com/en-us/azure/aks/open-service-mesh-deploy-addon-az-cli)
-    [Ingress Nginx installed](https://docs.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration)
-- OSM [CLI](https://release-v1-0.docs.openservicemesh.io/docs/guides/cli/)
-- A bit understanding of how ingress nginx works
+    [Ingress Nginx installed](https://docs.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration)  
+- OSM [CLI](https://release-v1-0.docs.openservicemesh.io/docs/guides/cli/)  
+- A bit understanding of how ingress nginx works  
 - A bit understanding of **permissive traffic policy mode** versus **SMI traffic access policies**
 
 ## Exploring OSM with demo whoami
@@ -46,8 +45,8 @@ X-Request-Id: e48425ac977c250d36c352bb68680fda
 X-Scheme: http
 ```
 
->Things start to break here with osm mesh enabled:
 ### add osm namespace to service mesh
+> Things start to break here with osm mesh enabled:
 - Add the osm namespace to the mesh and verify if envoy side-car is injected
 `osm namespace add osm`
 - If you curl the same IP again you will find the whoami is no longer accessible, because any service within OSM must use an ingress gateway/controller to be exposed outside the cluster. and you could use:
