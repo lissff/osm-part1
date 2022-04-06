@@ -127,13 +127,13 @@ metadata:
 spec:
   backends:
   - name: whoami  
-        port:  
+    port:  
       number: 80   
-      protocol: http    
+      protocol: http      
   sources:  
   - kind: Service  
     namespace: ingress-basic   
-    name: ingress-nginx-controller  
+    name: ingress-nginx-controller er  
 ```
 
 apply it then it's done,  `curl Ingress_Controller_Service_IP/whoami` you will see whoami responding again.
