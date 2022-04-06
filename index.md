@@ -127,7 +127,7 @@ metadata:
 spec:
   backends:
   - name: whoami  
-    port:  
+        port:  
       number: 80   
       protocol: http    
   sources:  
