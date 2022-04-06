@@ -13,15 +13,12 @@ That's why I'm going to document these steps I went through and I hope that will
     
     [Ingress Nginx installed](https://docs.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration)
     
-    If you want to explore AGIC+OSM then [AGIC add-on installed](https://docs.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-new)
 - OSM [CLI](https://release-v1-0.docs.openservicemesh.io/docs/guides/cli/)
 - A bit understanding of how ingress nginx works
 - A bit understanding of **permissive traffic policy mode** versus **SMI traffic access policies**
-- *only for AGIC Explorers*: bloody experience with AGIC 
- 
 
 ## Exploring OSM with demo whoami
-Why [whoami](https://hub.docker.com/r/containous/whoami)? Simply because it accepts all paths/prefix so you don't need to spend time struggling with path regex annotations. This is especially helpful when we are using AGIC, for which the path syntax could be different with Nginx and might cause unpleasant issues.
+Why [whoami](https://hub.docker.com/r/containous/whoami)? Simply because it accepts all paths/prefix so you don't need to spend time struggling with path regex annotations. 
 
 ### whoami as a Loadbalancer Service
 1. `kubectl create ns osm`
@@ -57,7 +54,6 @@ X-Scheme: http
 `osm namespace add osm`
 - If you curl the same IP again you will find the whoami is no longer accessible, because any service within OSM must use an ingress gateway/controller to be exposed outside the cluster. and you could use:
   - [Nginx-Ingress](https://release-v1-0.docs.openservicemesh.io/docs/demos/ingress_k8s_nginx/) In the next section.
-  - AGIC, no examples I can find yet and hopefully this would be the first one.
   - [Contour](https://release-v1-0.docs.openservicemesh.io/docs/demos/ingress_contour/) I didn't try myself because nginx is good(~tough~) enough for me.
 
 ## Ingress with Ingress Nginx
@@ -138,53 +134,7 @@ spec:
 
 apply it then it's done,  `curl Ingress_Controller_Service_IP/whoami` you will see whoami responding again.
 
-## Ingress with AGIC
-If you have your websites hosted in Azure and AKS then you probably know the charming part of AGIC. But the dark side is being a nginx server, we are not able to see some of the debug logs(because it is managed by Azure).
 
-The ingress rule itself it easy, if you worked with AGIC before(just make sure we have `kubernetes.io/ingress.class: azure/application-gateway` so that AGIC would recgonize it.
-
-Another tip is don't forget to translate your Ingress Nginx annotation into [AGIC annotaion](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/), e.g.
-using ` appgw.ingress.kubernetes.io/backend-path-prefix: / ` instead of `nginx.ingress.kubernetes.io/rewrite-target: / `
-This is not necessary for whoami but always good to know.
-```
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    appgw.ingress.kubernetes.io/backend-path-prefix: /
-    kubernetes.io/ingress.class: azure/application-gateway
-  name: agic
-  namespace: osm
-spec:
-  rules:
-  - http:
-      paths:
-      - backend:
-          service:
-            name: whoami
-            port:
-              number: 80
-        path: /whoami
-        pathType: Prefix
-```
-Then what about IngressBackend? We barely knows why my Application_Gateway_IP returns 502 and why it is saying my backend is unhealthy.
-We know though from previous ingress controller experiment that if my AGIC traffic is not allowed by whoami, then it just rejects it. But how to allow my Application Gateway access? What should I put into this trusted sources block if I don't even have a service that stands for AGIC:
-```
-  sources:
-  - kind: 
-    namespace: 
-    name: 
-```
-The answer is IPRange!!! 
-So in the same IngressBackend, adding the subnet CIDR of application gateway(for me it is 10.0.0.0/8) then magic will happen.
-```
-  sources:
-  - kind: Service
-    name: ingress-nginx-controller
-    namespace: ingress-basic
-  - kind: IPRange
-    name: 10.0.0.0/8
-```
 ## What's coming next
 observability with dashboard
 
