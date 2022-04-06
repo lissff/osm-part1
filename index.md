@@ -124,16 +124,16 @@ apiVersion: policy.openservicemesh.io/v1alpha1
 metadata:
   name: whoami
   namespace: osm
-spec:
-  backends:
+spec:  
+  backends:  
   - name: whoami  
-    port:  
-      number: 80   
-      protocol: http      
-  sources:  
-  - kind: Service  
-    namespace: ingress-basic   
-    name: ingress-nginx-controller er  
+    port:
+      number: 80 
+      protocol: http
+  sources:
+  - kind: Service
+    namespace: ingress-basic
+    name: ingress-nginx-controller
 ```
 
 apply it then it's done,  `curl Ingress_Controller_Service_IP/whoami` you will see whoami responding again.
