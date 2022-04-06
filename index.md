@@ -126,14 +126,14 @@ metadata:
   namespace: osm
 spec:
   backends:
-  - name: whoami
-    port:
-      number: 80 
-      protocol: http
-  sources:
-  - kind: Service
-    namespace: ingress-basic
-    name: ingress-nginx-controller
+  - name: whoami  
+    port:  
+      number: 80   
+      protocol: http    
+  sources:  
+  - kind: Service  
+    namespace: ingress-basic   
+    name: ingress-nginx-controller  
 ```
 
 apply it then it's done,  `curl Ingress_Controller_Service_IP/whoami` you will see whoami responding again.
