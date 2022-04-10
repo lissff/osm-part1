@@ -152,7 +152,7 @@ Traceback (most recent call last):
 redis.exceptions.InvalidResponse: Protocol Error: H, b'TTP/1.1 400 Bad Request'
 ```
 This means when azure-vote-front sending the request to the backend redis(azure-vote-back), the protocol was changed by OSM. And turns out the current OSM only supports HTTP traffic and [TCP is not yet supported](https://github.com/openservicemesh/osm/issues/1521).   
-In order to send TCP protocol to backend redis, we need to do some trick on the azure-vote-back service telling OSM to send him TCP:
+In order to send TCP protocol to backend redis, we need to do some trick(adding **appProtocol: TCP** ) on the azure-vote-back service telling OSM to send him TCP:
 ```
 apiVersion: v1
 kind: Service
