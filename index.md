@@ -3,14 +3,13 @@
 {:toc}
 ## OSM with AKS
 [OSM](https://github.com/openservicemesh/osm) which claims to be lightweight and extensible, now can be one-click integrated into AKS as add-on.
-It sounds promising but I do spend quite sometime running just a demo app maybe because it is a new product and documentation is not covering all scenarios. 
-That's why I'm going to document these steps I went through and I hope that will be helpful for anyone who has experienced the same issues.
+It sounds promising but I do spend quite sometime running just a demo app, OSM is kind of new at the moment and documentation is not covering all scenarios. I'm using the latest [v1.0.0](https://github.com/openservicemesh/osm/releases/tag/v1.0.0) version, and I do hope there will be more wiki and trouble shooting guide coming out before next version.
 
 >Prerequisites
 - AKS cluster with 
     [OSM add-on installed](https://docs.microsoft.com/en-us/azure/aks/open-service-mesh-deploy-addon-az-cli)
     [Ingress Nginx installed](https://docs.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration)  
-- OSM [CLI](https://release-v1-0.docs.openservicemesh.io/docs/guides/cli/)  
+- OSM [CLI](https://release-v1-0.docs.openservicemesh.io/docs/guides/cli/)
 - A bit understanding of how ingress nginx works  
 - A bit understanding of **permissive traffic policy mode** versus **SMI traffic access policies**
 
@@ -52,8 +51,7 @@ X-Scheme: http
 - If you curl the same IP again you will find the whoami is no longer accessible, because any service within OSM must use an ingress gateway/controller to be exposed outside the cluster. and you could use:
   - [Nginx-Ingress](https://release-v1-0.docs.openservicemesh.io/docs/demos/ingress_k8s_nginx/) In the next section.
   - [Contour](https://release-v1-0.docs.openservicemesh.io/docs/demos/ingress_contour/) I didn't try myself because nginx is good(~tough~) enough for me.
-
-## Ingress with Ingress Nginx
+## Expose your service with Ingress Nginx
 Suppose we have ingress-controller installed in **ingress-basic** namespece(or anywhere else just don't mess up with **kube-system** and **osm**)
 
 1. Ask Ingress controller if it is ready by
@@ -131,8 +129,48 @@ spec:
 
 apply it then it's done,  `curl Ingress_Controller_Service_IP/whoami` you will see whoami responding again.
 
+## About Backend Application Protocol
+I've been successful with almost every single applications, but failed with the [azure vote app](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#run-the-application).
+However I tried it just return with 500 Internal Server Error:
+```
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<title>500 Internal Server Error</title>
+<h1>Internal Server Error</h1>
+<p>The server encountered an internal error and was unable to complete your request.  Either the server is overloaded or there is an error in the application.</p>
+```
+
+The azure-vote-front log is complaining something about **Protocol Error: H, b'TTP/1.1 400 Bad Request**
+```
+[pid: 15|app: 0|req: 2/2] 127.0.0.1 () {50 vars in 637 bytes} [Sun Apr 10 10:39:31 2022] GET / => generated 950 bytes in 1 msecs (HTTP/1.1 200) 2 headers in 80 bytes (1 switches on core 0)
+[2022-04-10 10:39:34,382] ERROR in app: Exception on / [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+...
+  File "/usr/local/lib/python3.6/site-packages/redis/connection.py", line 292, in read_response
+    (str(byte), str(response)))
+redis.exceptions.InvalidResponse: Protocol Error: H, b'TTP/1.1 400 Bad Request'
+```
+This means when azure-vote-front sending the request to the backend redis(azure-vote-back), the protocol was changed by OSM. And turns out the current OSM only supports HTTP traffic and [TCP is not yet supported](https://github.com/openservicemesh/osm/issues/1521).   
+In order to send TCP protocol to backend redis, we need to do some trick on the azure-vote-back service telling OSM to send him TCP:
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-vote-back
+  ...
+  ports:
+  - port: 6379
+    appProtocol: TCP
+```
+Remember to delete the azure-vote-front to force reconnection, it is not designed to retry itself.
+Sadly I cannot find any explanation about appProtocol except for this one [application protocol selection](https://release-v1-0.docs.openservicemesh.io/docs/guides/app_onboarding/app_protocol_selection/).
+
 ## What's coming next
 observability with dashboard
+```
+10.240.0.35 - - [10/Apr/2022:10:18:55 +0000] "GET /vote HTTP/2.0" 502 173 "-" "curl/7.58.0" 36 0.004 [osm-azure-vote-front-80] [] 10.240.0.124:80 173 0.000 502 798c878242728d5abc6dc18ad58ee2e1
+```
 
 egress exploration
 
