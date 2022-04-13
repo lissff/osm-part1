@@ -168,9 +168,6 @@ Sadly I cannot find any explanation about appProtocol except for this one [appli
 
 ## What's coming next
 observability with dashboard
-```
-10.240.0.35 - - [10/Apr/2022:10:18:55 +0000] "GET /vote HTTP/2.0" 502 173 "-" "curl/7.58.0" 36 0.004 [osm-azure-vote-front-80] [] 10.240.0.124:80 173 0.000 502 798c878242728d5abc6dc18ad58ee2e1
-```
 
 egress exploration
 
